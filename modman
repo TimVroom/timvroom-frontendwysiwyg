@@ -1,0 +1,4 @@
+src/app/code/community/Timvroom/Frontendwysiwyg     app/code/community/Timvroom/Frontendwysiwyg
+src/app/design/frontend/base/default/layout/timvroom_frontendwysiwyg.xml app/design/frontend/base/default/layout/timvroom_frontendwysiwyg.xml
+src/js/timvroom/niceditor  js/timvroom/niceditor
+src/app/etc/modules/*    app/etc/modules/
