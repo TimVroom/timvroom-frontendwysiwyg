@@ -91,8 +91,16 @@
             this.target.removeClassName('loading');
             this.target.update(response.responseText);
         },
-        saveContent: function(content, id, instnce) {
-
+        saveContent: function(content, id, instance) {
+            this.target.addClassName('loading');
+            new Ajax.Request('timvroom_wysiwyg/ajaxcms/save', {
+                url: this.url,
+                content: content,
+                onComplete: this.submitContentComplete.bindAsEventListener(this)
+            });
+        },
+        submitContentComplete : function(response) {
+            this.target.removeClassName('loading');
         }
     });
 })();
