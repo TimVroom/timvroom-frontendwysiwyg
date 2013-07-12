@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+    <cms_page_admin_edit>
+        <reference name="head">
+            <action method="addJs"><script>timvroom/niceditor/nicEdit.js</script></action>
+            <action method="addJs"><script>timvroom/niceditor/nicInit.js</script></action>
+            <action method="addCss"><css>css/ncedit.css</css></action>
+        </reference>
+    </cms_page_admin_edit>
+</layout>
