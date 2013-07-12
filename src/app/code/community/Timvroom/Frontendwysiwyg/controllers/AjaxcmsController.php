@@ -10,6 +10,13 @@
 class Timvroom_Frontendwysiwyg_AjaxcmsController extends Mage_Core_Controller_Front_Action
 {
     private $_helper;
+
+    public function _construct()
+    {
+        parent::_construct();
+        $this->_helper = Mage::helper('timvroom_frontendwysiwyg');
+    }
+
     public function preDispatch()
     {
         parent::preDispatch();
@@ -26,7 +33,11 @@ class Timvroom_Frontendwysiwyg_AjaxcmsController extends Mage_Core_Controller_Fr
 
     protected function loadModel() {
         $url = $this->getRequest()->getParam('url');
+        if ($url === '/') {
+            $url = Mage::getStoreConfig('web/default/cms_home_page');
+        }
         $url = trim($url, '/');
+
         $model = Mage::getModel('cms/page')->load($url, 'identifier');
         return $model;
     }
@@ -49,7 +60,35 @@ class Timvroom_Frontendwysiwyg_AjaxcmsController extends Mage_Core_Controller_Fr
 
     public function saveAction()
     {
-        $model = $this->loadModel();
+        // check if data sent
+        if ($data = $this->getRequest()->getPost()) {
+            //init model and set data
+            $model = $this->loadModel();
+
+            if (!$model->getId()) {
+                echo json_encode('Failed to save');
+                return;
+            }
+            $model->setContent($data['content']);
+
+            Mage::dispatchEvent('cms_page_prepare_save', array('page' => $model, 'request' => $this->getRequest()));
+            // try to save it
+            try {
+                // save the data
+                $model->save();
+                echo 'Page saved';
+            } catch (Mage_Core_Exception $e) {
+                echo $e->getMessage();
+                return;
+            }
+        }
+    }
+
+    /**
+     * @todo implement get widget logic
+     */
+    public function getWidget()
+    {
 
     }
 }

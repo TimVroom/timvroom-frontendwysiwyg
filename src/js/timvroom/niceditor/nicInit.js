@@ -4,6 +4,32 @@
     bkLib.onDomLoaded(function () {
         new editorClass();
     });
+    nicEditorPane = nicEditorPane.extend({
+        init : function () {
+            Event.observe(window, 'scroll', this.onScroll.bind(this));
+        },
+        onScroll : function () {
+            if (this.contain !== null) {
+                var panel = $('nicCmsPanel');
+                if(panel.style.position == 'fixed') {
+                    var top = panel.getHeight() + 'px';
+
+                    this.contain.setStyle({'position' : 'fixed', top: top});
+                } else {
+                    var top = panel.cumulativeOffset().top + panel.getHeight();
+                    this.contain.setStyle({'position' : 'absolute', top: top+'px'});
+                }
+            }
+        },
+        remove: function() {
+            Event.stopObserving(window, 'scroll', this.onScroll);
+            if(this.contain) {
+                this.contain.remove();
+                this.contain = null;
+            }
+        }
+    });
+
     var editorClass = Class.create({
         editor : null,
         panelOffset : 0,
@@ -17,7 +43,7 @@
 
             this.toggleButton = new Element('div', {id : 'cmsToggleButton'}).setStyle({
                 'position' : 'fixed',
-                'z-index': '10',
+                'z-index' : '10',
                 'top' : 0,
                 'left' : 0,
                 'border' : '1px solid #000',
@@ -28,22 +54,22 @@
             this.attach();
         },
         attach : function () {
-            $$('body')[0].insert({top: this.toggleButton});
+            $$('body')[0].insert({top : this.toggleButton});
             Event.observe(this.toggleButton, 'click', this.onToggle);
         },
-        createPanel: function() {
-            this.panel = new Element('div', {'id' : 'nicCmsPanel'}).setStyle({'width' : this.target.getWidth() + 'px;'});
-            this.target.insert({before: this.panel});
+        createPanel : function () {
+            this.panel = new Element('div', {'id' : 'nicCmsPanel'}).setStyle({'width' : this.target.getWidth() + 'px;', zIndex: '9999'});
+            this.target.insert({before : this.panel});
             this.panelOffset = this.panel.cumulativeOffset()['top'];
-            if(this.editor){
+            if (this.editor) {
                 this.editor.setPanel(this.panel);
             }
             this.onScrollObserver();
             Event.observe(window, 'scroll', this.onScrollObserver);
         },
-        destroyPanel: function() {
+        destroyPanel : function () {
             Event.stopObserving(window, 'scroll', this.onScrollObserver);
-            if (this.editor){
+            if (this.editor) {
                 this.editor.removePanel(this.panel);
             }
         },
@@ -58,7 +84,7 @@
             this.editor = new nicEditor({
                 fullPanel : true,
                 iconsPath : '/js/timvroom/niceditor/nicEditorIcons.gif',
-                onSave: this.saveContent.bindAsEventListener(this)
+                onSave : this.saveContent.bindAsEventListener(this)
             });
             this.createPanel();
             this.editor.addInstance(this.target);
@@ -74,32 +100,35 @@
                 this.loadContent(false);
             }
         },
-        loadContent: function(editable){
+        loadContent : function (editable) {
             editable = editable || false;
             console.log(editable);
             this.target.addClassName('loading');
             new Ajax.Request('timvroom_wysiwyg/ajaxcms/get', {
-                parameters: {
+                parameters : {
                     editable : editable,
-                    url: this.url
+                    url : this.url
                 },
-                onComplete: this.submitComplete.bindAsEventListener(this)
+                onComplete : this.submitComplete.bindAsEventListener(this)
             });
         },
-        submitComplete: function(response) {
+        submitComplete : function (response) {
             console.log(response);
             this.target.removeClassName('loading');
             this.target.update(response.responseText);
         },
-        saveContent: function(content, id, instance) {
+        saveContent : function (content, id, instance) {
             this.target.addClassName('loading');
             new Ajax.Request('timvroom_wysiwyg/ajaxcms/save', {
-                url: this.url,
-                content: content,
-                onComplete: this.submitContentComplete.bindAsEventListener(this)
+                method: 'post',
+                parameters: {
+                    content : content,
+                    url : this.url
+                },
+                onComplete : this.submitContentComplete.bindAsEventListener(this)
             });
         },
-        submitContentComplete : function(response) {
+        submitContentComplete : function (response) {
             this.target.removeClassName('loading');
         }
     });

@@ -58,4 +58,11 @@
             </updates>
         </layout>
     </frontend>
+    <default>
+        <timvroom_frontendwysiwyg>
+            <general>
+                <active>1</active>
+            </general>
+        </timvroom_frontendwysiwyg>
+    </default>
 </config>

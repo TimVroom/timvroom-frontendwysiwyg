@@ -10,10 +10,17 @@
 
 class Timvroom_Frontendwysiwyg_Helper_Data extends Mage_Core_Helper_Abstract
 {
+    const XML_PATH_ACTIVE = '';
+
     protected $switchSessionName  = 'adminhtml';
     protected $_isAdminActive = false;
     protected $currentSessionId;
     protected $currentSessionName;
+
+    public function isActive()
+    {
+        return Mage::getStoreConfig(self::XML_PATH_ACTIVE);
+    }
 
     public function switchAdminSession()
     {
